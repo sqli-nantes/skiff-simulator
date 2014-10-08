@@ -23,7 +23,8 @@ void loop()
 {
   
   distance= lire_distance();
- 
+
+  Serial.print("D"); 
   Serial.println(distance);
   //Envoi des données en BT : 
 
@@ -39,8 +40,8 @@ long lire_distance()
   digitalWrite(TriggerPin, LOW);
   lecture_echo = pulseIn(EchoPin, HIGH);
   long cm = lecture_echo / 58;
-  Serial.print("Distance en cm : ");
-  Serial.println(cm); 
+  //Serial.print("Distance en cm : ");
+  //Serial.println(cm); 
   return(cm);
 }
 

@@ -1,0 +1,56 @@
+@import "compass";
+@import "fonts";
+@import "mixins";
+
+html, body{
+	margin: 0;
+	padding: 0;
+	width : 100%;
+	height: 100%;
+	background-color: #1abae8;
+}
+
+.content{
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+.content::before{
+	content: '';
+	position: absolute;
+	background-repeat:repeat-y;
+	background-image: url('../assets/images/riviere_gauche.png');
+	background-size: 2vw;
+	width: 96px;
+	height: 100%;
+	left: 0;
+	top: 0;
+}
+
+.content::after{
+	content: '';
+	position: absolute;
+	background-repeat:repeat-y;
+	background-image: url('../assets/images/riviere_droite.png');
+	background-size: 2vw;
+	width: 96px;
+	height: 100%;
+	right: 0;
+	top: 0;
+}
+
+.logo{
+	z-index: 100;
+	@include image('logo.png', top, 100px, 555px, 334px );
+}
+
+.btnStart{
+	@include image('start.png', bottom, 100px, 555px, 125px );
+}
+
+.skiff{
+	@include image('rameur_accueil.png', top, '50%', 800px, 1167px );	
+}
+
+

@@ -1,0 +1,18 @@
+@mixin image($path, $prop, $valProp,$width, $height){
+	position: absolute;
+	left: 50%;
+	margin-left: -($width / 2);
+	background-image: url('../assets/images/#{$path}');
+	width: $width;
+	height: $height;
+	@if $prop == 'top' and $valProp == '50%'{
+		top : 50%;
+		margin-top: -($height / 2);
+	}
+	@else{
+		#{$prop} : $valProp;
+	}
+
+}
+
+

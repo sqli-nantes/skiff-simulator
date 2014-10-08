@@ -1,0 +1,26 @@
+@font-face {
+	font-family: "MineCrafter_3";
+	src: url('../assets/fonts/Minecrafter_3.eot');
+	src: url('../assets/fonts/Minecrafter_3.eot?#iefix') format('embedded-opentype'),
+	url('../assets/fonts/Minecrafter_3.svg#MineCrafter 3') format('svg'),
+	url('../assets/fonts/Minecrafter_3.woff') format('woff'),
+	url('../assets/fonts/Minecrafter_3.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+    font-family: "Minecraftia";
+    src: url('../assets/fonts/Minecraftia-Regular.eot');
+    src: url('../assets/fonts/Minecraftia-Regular.eot?#iefix') format('embedded-opentype'),
+    url('../assets/fonts/Minecraftia-Regular.svg#Minecraftia') format('svg'),
+    url('../assets/fonts/Minecraftia-Regular.woff') format('woff'),
+    url('../assets/fonts/Minecraftia-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body{
+	font-family: "Minecraftia";
+	direction: ltr;
+}

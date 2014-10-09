@@ -5,12 +5,12 @@ var skiffSimulatorChrome = skiffSimulatorChrome || function(){
 		Arduino Part
     */
 
-    var connectionId = -1;
-    var lastArduinoTime = new Date().getTime();
-    var delay = 100;
-    var compt = 0;
-    var regExp = /D(.*)/;
-	var value = "";
+    var connectionId = -1
+    	,lastArduinoTime = new Date().getTime()
+    	,delay = 100
+    	,compt = 0
+    	,regExp = /D(.*)/
+    	,value = "";
 
     function initArduino(){
     	chrome.serial.getDevices(function(ports) {
@@ -43,6 +43,7 @@ var skiffSimulatorChrome = skiffSimulatorChrome || function(){
 		        value += str.substring(0, str.length-1);
 				if (regExp.test(value)) // Light on and off
 				{
+					skiffSimulatorApp.setDistance(regExp.exec(value)[1]);
 					console.log(regExp.exec(value)[1]);
 					/*var curentTime = new Date().getTime();
 					if (curentTime - lastArduinoTime > delay){

@@ -10,6 +10,12 @@ html, body{
 	background-color: #1abae8;
 }
 
+canvas{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
 .content{
 	width: 100%;
 	height: 100%;
@@ -22,7 +28,7 @@ html, body{
 	background-repeat:repeat-y;
 	background-image: url('../assets/images/riviere_gauche.png');
 	background-size: 2vw;
-	width: 96px;
+	width: 2vw;
 	height: 100%;
 	left: 0;
 	top: 0;
@@ -34,7 +40,7 @@ html, body{
 	background-repeat:repeat-y;
 	background-image: url('../assets/images/riviere_droite.png');
 	background-size: 2vw;
-	width: 96px;
+	width: 2vw;
 	height: 100%;
 	right: 0;
 	top: 0;

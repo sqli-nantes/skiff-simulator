@@ -10,7 +10,8 @@ var skiffSimulatorChrome = skiffSimulatorChrome || function(){
     	,delay = 100
     	,compt = 0
     	,regExp = /D(.*)/
-    	,value = "";
+    	,value = ""
+    	,distance = 0;
 
     function initArduino(){
     	chrome.serial.getDevices(function(ports) {
@@ -43,8 +44,13 @@ var skiffSimulatorChrome = skiffSimulatorChrome || function(){
 		        value += str.substring(0, str.length-1);
 				if (regExp.test(value)) // Light on and off
 				{
-					skiffSimulatorApp.setDistance(regExp.exec(value)[1]);
-					console.log(regExp.exec(value)[1]);
+					var distanceTmp = +regExp.exec(value)[1];
+					if (distanceTmp < ConstSAS.DISTANCE_MAX 
+						&& Math.abs(distance - distanceTmp) < (ConstSAS.DISTANCE_MAX * 1.5) ){
+						AppSAS.setDistance(distanceTmp);
+					}
+					distance = distanceTmp;
+					//console.log(regExp.exec(value)[1]);
 					/*var curentTime = new Date().getTime();
 					if (curentTime - lastArduinoTime > delay){
 						lastArduinoTime = curentTime;

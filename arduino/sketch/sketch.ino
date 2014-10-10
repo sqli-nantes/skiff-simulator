@@ -28,7 +28,7 @@ void loop()
   Serial.println(distance);
   //Envoi des données en BT : 
 
-  delay(100);
+  delay(50);
   
 }
 

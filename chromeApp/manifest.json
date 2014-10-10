@@ -6,7 +6,7 @@
   "description": "Arduino & Chrome",
   "app": {
     "background": {
-      "scripts": [ "javascript/background.js" ]
+      "scripts": [ "javascript/chrome_background.js" ]
     }
   },
 

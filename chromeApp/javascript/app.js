@@ -1,28 +1,38 @@
 'use strict';
 
-var skiffSimulatorApp = skiffSimulatorApp || function(){
+var AppSAS = AppSAS || function(){
 
 	// Différents états du jeux
-	var STATE_ACCUEIL = 0,
-		STATE_RUNNING = 1,
-		STATE_END = 2;
+	var constState = {
+		STATE_ACCUEIL : 0,
+		STATE_RUNNING : 1,
+		STATE_END : 2
+	};
+
+	var constScreen = {
+		SCREEN_PORTRAIT : 1,
+		SCREEN_LANDSCAPE : 2
+	};
 
 	// Variables à utiliser
-	var canvas = null,
-		context = null,
-		distanceArduino = 0,
-		percent = 0,
-		percentRive = 0,
-		resources = new Resources(),
-		rectCanvas = null,
-		ratio = 1;
 
+	var ui = {
+		canvas : null,
+		context : null,
+		resources : new Resources(),
+		modeScreen : constScreen.SCREEN_LANDSCAPE,
+		ratio : 1
+	}
 
-	var game = {
-		stateGame : STATE_ACCUEIL,
+	var gameModel = {
+		stateGame : constState.STATE_ACCUEIL,
 		indexSprite : 'R0',
 		time : 0,
-		distanceSkiff : 0
+		percent : 0,
+		distanceSkiff : 0,
+		distanceArduino : 0, 
+		direction : 0,
+		speed : 0
 	};
 
 	
@@ -35,34 +45,45 @@ var skiffSimulatorApp = skiffSimulatorApp || function(){
 		}
 
 		// On initialise le canvas
-		canvas = document.getElementById('skiff');
-		canvas.width  = window.innerWidth;
-		canvas.height = window.innerHeight;
-		rectCanvas = canvas.getBoundingClientRect();
-		context = canvas.getContext('2d');
-		canvas.addEventListener('click', checkClick, false);
+		ui.canvas = document.getElementById('skiff');
+		ui.canvas.width  = window.innerWidth;
+		ui.canvas.height = window.innerHeight;
+		ui.context = ui.canvas.getContext('2d');
+		ui.canvas.addEventListener('click', checkClick, false);
 
 		// On précharge toutes les ressources nécessaires
-		resources.loadSprites([	{title: 'logo', url: 'assets/images/logo.png'},
+		ui.resources.loadSprites([	{title: 'logo', url: 'assets/images/logo.png'},
 								{title: 'game_over', url: 'assets/images/gameover.png'},
-								{title: 'rive_gauche', url: 'assets/images/riviere_gauche.png'},
-								{title: 'rive_droite', url: 'assets/images/riviere_droite.png'},
+								{title: 'rive_gauche_portrait', url: 'assets/images/riviere_gauche_portrait.png'},
+								{title: 'rive_gauche_paysage', url: 'assets/images/riviere_gauche_paysage.png'},
+								{title: 'rive_droite_portrait', url: 'assets/images/riviere_droite_portrait.png'},
+								{title: 'rive_droite_paysage', url: 'assets/images/riviere_droite_paysage.png'},
 								{title: 'btn_start', url: 'assets/images/start.png'},
 								{title: 'btn_reset', url: 'assets/images/replay.png'},
-								{title: 'R0', url: 'assets/images/rameur_accueil.png'},
-								{title: 'R1', url: 'assets/images/R3.png'},
-								{title: 'R2', url: 'assets/images/R4.png'},
-								{title: 'R3', url: 'assets/images/R5.png'},
-								{title: 'R4', url: 'assets/images/A1.png'},
-								{title: 'R5', url: 'assets/images/A2.png'},
-								{title: 'R6', url: 'assets/images/A3.png'},
-								{title: 'R7', url: 'assets/images/A4.png'},
-								{title: 'R8', url: 'assets/images/A5.png'},
-								{title: 'R9', url: 'assets/images/R1.png'},
-								{title: 'R10', url: 'assets/images/R2.png'}
+								{title: 'R0_portrait', url: 'assets/images/rameur_accueil_portrait.png'},
+								{title: 'R0_paysage', url: 'assets/images/rameur_accueil_paysage.png'},
+								{title: 'R3_portrait', url: 'assets/images/R3_portrait.png'},
+								{title: 'R3_paysage', url: 'assets/images/R3_paysage.png'},
+								{title: 'R4_portrait', url: 'assets/images/R4_portrait.png'},
+								{title: 'R4_paysage', url: 'assets/images/R4_paysage.png'},
+								{title: 'R5_portrait', url: 'assets/images/R5_portrait.png'},
+								{title: 'R5_paysage', url: 'assets/images/R5_paysage.png'},
+								{title: 'A1_portrait', url: 'assets/images/A1_portrait.png'},
+								{title: 'A1_paysage', url: 'assets/images/A1_paysage.png'},
+								{title: 'A2_portrait', url: 'assets/images/A2_portrait.png'},
+								{title: 'A2_paysage', url: 'assets/images/A2_paysage.png'},
+								{title: 'A3_portrait', url: 'assets/images/A3_portrait.png'},
+								{title: 'A3_paysage', url: 'assets/images/A3_paysage.png'},
+								{title: 'A4_portrait', url: 'assets/images/A4_portrait.png'},
+								{title: 'A4_paysage', url: 'assets/images/A4_paysage.png'},
+								{title: 'A5_portrait', url: 'assets/images/A5_portrait.png'},
+								{title: 'A5_paysage', url: 'assets/images/A5_paysage.png'},
+								{title: 'R1_portrait', url: 'assets/images/R1_portrait.png'},
+								{title: 'R1_paysage', url: 'assets/images/R1_paysage.png'},
+								{title: 'R2_portrait', url: 'assets/images/R2_portrait.png'},
+								{title: 'R2_paysage', url: 'assets/images/R2_paysage.png'}
 							])
-		.then(function(value) {
-			ratio = rectCanvas.height / resources.images['rive_gauche'].height;
+		.then(function(value) {			
 			paintSkiff();		
 		}).catch(function(err){
 			console.error("Error  : %s \n %s",err.message, err.stack);
@@ -70,201 +91,90 @@ var skiffSimulatorApp = skiffSimulatorApp || function(){
 
 	}
 
+	
+
 	// Gère l'affichage de l'écran
 	function paintSkiff() {
+
+		// Initialisation des variables pour gérer les redimentionements
+		ui.modeScreen = window.innerWidth > window.innerHeight ? constScreen.SCREEN_LANDSCAPE : constScreen.SCREEN_PORTRAIT;
+		ui.ratio = ui.canvas.height / ui.resources.images['rive_gauche'+getSuffix()].height;
+		ui.canvas.width  = window.innerWidth;
+		ui.canvas.height = window.innerHeight;
+
 		// Affichage des décors
 		paintBackground();		
 
-		if (game.stateGame === STATE_ACCUEIL){
-			paintSkiffAccueil();
-		}else if (game.stateGame === STATE_RUNNING){
-			paintSkiffAction();
-		}if (game.stateGame === STATE_END){
-			paintSkiffEnd();
+		if (gameModel.stateGame === constState.STATE_ACCUEIL){
+			ScreenSasAccueil.paintSkiffAccueil();
+		}else if (gameModel.stateGame === constState.STATE_RUNNING){
+			ScreenSasAction.paintSkiffAction();
+		}if (gameModel.stateGame === constState.STATE_END){
+			ScreenSasEnd.paintSkiffEnd();
 		}
 
 		window.requestAnimationFrame(paintSkiff);
 	}
 
 
-	function paintSkiffAction(){
-		// Gestion de l'état Arduino
-		checkSprite();
-		// Affichage du bateau
-		paintBoat();
-		// Affichage des texts
-		paintText();
-		// Engine
-	}
-
-	function paintSkiffAccueil(){
-
-		game.indexSprite = 'R0';
-		// Affichage du bateau
-		paintBoat();
-
-
-		// Affichage du logo
-		var logo = resources.images['logo'];
-		var finalHeight = logo.height * ratio,
-			finalWidth = logo.width * ratio;
-		context.drawImage(logo
-			, 0 //sx clipping de l'image originale
-			, 0 //sy clipping de l'image originale
-			, logo.width // swidth clipping de l'image originale
-			, logo.height // sheight clipping de l'image originale
-			, (rectCanvas.width / 2) - ((logo.width * ratio) / 2) // x Coordonnées dans le dessing du canvas
-			, 100 // y Coordonnées dans le dessing du canvas
-			, finalWidth // width taille du dessin
-			, finalHeight // height taille du dessin			
-			);
-
-
-		var btnStart = resources.images['btn_start'];
-		finalHeight = btnStart.height * ratio;
-		finalWidth = btnStart.width * ratio;
-		context.drawImage(btnStart
-			, 0 //sx clipping de l'image originale
-			, 0 //sy clipping de l'image originale
-			, btnStart.width // swidth clipping de l'image originale
-			, btnStart.height // sheight clipping de l'image originale
-			, (rectCanvas.width / 2) - ((btnStart.width * ratio) / 2) // x Coordonnées dans le dessing du canvas
-			, rectCanvas.height - 200 // y Coordonnées dans le dessing du canvas
-			, finalWidth // width taille du dessin
-			, finalHeight // height taille du dessin			
-			);
-
-		
-	}
-
-	function paintSkiffEnd(){
-
-	}
+	
 
 
 	// Affiche le fond d'écran et le rivage
 	function paintBackground(){
-		context.clearRect(0,0, rectCanvas.width, rectCanvas.height);
-		context.beginPath();
-		context.rect(0,0, rectCanvas.width, rectCanvas.height);
-		context.fillStyle = '#1abae8';
-		context.fill();
+		ui.context.clearRect(0,0, ui.canvas.width, ui.canvas.height);
+		ui.context.beginPath();
+		ui.context.rect(0,0, ui.canvas.width, ui.canvas.height);
+		ui.context.fillStyle = '#1abae8';
+		ui.context.fill();
 		paintRive(false);
 		paintRive(true);
 	}
 
 	// Affiche le rivage en fonction de la rive souhaitée et de la progression du rameur
 	function paintRive(riveDroite){
-		var rive = resources.images[riveDroite ? 'rive_droite' : 'rive_gauche'];
-		var finalHeight = rive.height * ratio,
-			finalWidth = rive.width * ratio;
+		var rive = ui.resources.images[(riveDroite ? 'rive_droite' : 'rive_gauche')+getSuffix()];
+		var finalHeight = rive.height * ui.ratio,
+			finalWidth = rive.width * ui.ratio;
 
-		context.drawImage(rive
+		ui.context.drawImage(rive
 			, 0 //sx clipping de l'image originale
 			, 0 //sy clipping de l'image originale
 			, rive.width // swidth clipping de l'image originale
 			, rive.height // sheight clipping de l'image originale
-			, riveDroite ? rectCanvas.width - finalWidth : 0 // x Coordonnées dans le dessing du canvas
-			, 0 - (finalHeight * percent) // y Coordonnées dans le dessing du canvas
+			, riveDroite ? ui.canvas.width - finalWidth : 0 // x Coordonnées dans le dessing du canvas
+			, 0 - (finalHeight * gameModel.percent) // y Coordonnées dans le dessing du canvas
 			, finalWidth // width taille du dessin
 			, finalHeight // height taille du dessin			
 			);
-		context.drawImage(rive
+		ui.context.drawImage(rive
 			, 0 //sx clipping de l'image originale
 			, 0 //sy clipping de l'image originale
 			, rive.width // swidth clipping de l'image originale
 			, rive.height // sheight clipping de l'image originale
-			, riveDroite ? rectCanvas.width - finalWidth : 0 // x Coordonnées dans le dessing du canvas
-			, finalHeight - (finalHeight * percent) // y Coordonnées dans le dessing du canvas
+			, riveDroite ? ui.canvas.width - finalWidth : 0 // x Coordonnées dans le dessing du ui.canvas
+			, finalHeight - (finalHeight * gameModel.percent) // y Coordonnées dans le dessing du canvas
 			, finalWidth // width taille du dessin
 			, finalHeight // height taille du dessin			
 			);
 
 	}
 
-
-	var time = new Date().getTime();
-	var timeRive = new Date().getTime();
-
-	// Gère l'état du sprite à afficher
-	function checkSprite(){
-
-		if (new Date().getTime() - game.time > 30 * 1000){
-			game.stateGame = STATE_END;
-			return;
-		}
-
-		// Bouchon pour les tests à virer ! 
-		var timeBis = new Date().getTime();
-		var delta = timeBis - time;
-		if (delta > 2000){
-			time = timeBis;
-		}else{
-			game.indexSprite = 'R'+(Math.min(Math.round((delta/2000) * 10), 9)+1);
-		}
-		
-		var timeMoveRive = new Date().getTime();
-		var deltaRive = timeMoveRive - timeRive;
-		if (deltaRive > 4000){
-			timeRive = timeMoveRive;
-			percent = 0;
-		}else{
-			percent = deltaRive / 4000;
-		}
-	}
-
-	// Affiche le bon sprire du bateau
-	function paintBoat(){
-		var image = resources.images[game.indexSprite];
-		//var ratio = 0.05;
-		context.shadowOffsetX = 0;
-		context.shadowOffsetY = 0;
-		context.shadowBlur = 0;
-		context.drawImage(image
-			, 0 //sx clipping de l'image originale
-			, 0 //sy clipping de l'image originale
-			, image.width // swidth clipping de l'image originale
-			, image.height // sheight clipping de l'image originale
-			, (rectCanvas.width / 2) - ((image.width * ratio) / 2) // x Coordonnées dans le dessing du canvas
-			, (rectCanvas.height / 2) - ((image.height * ratio) / 2)  + 100// y Coordonnées dans le dessing du canvas
-			, image.width * ratio // width taille du dessin
-			, image.height * ratio // height taille du dessin			
-			)
-	}
-
-
-	// Affiche les scores et le temps 
-	function paintText(){
-		context.font = '40pt MineCrafter_3';
-		context.textAlign = 'center';
-		context.fillStyle = 'white';
-		context.shadowColor = 'black';
-		context.shadowOffsetX = 0;
-		context.shadowOffsetY = 10;
-		context.shadowBlur = 4;
-      	context.fillText('750 M', rectCanvas.width / 2, 100);
-      	var time = new Date().getTime();
-      	var secondes = Math.round((time - game.time) / 1000);
-      	if (secondes < 10){
-      		secondes = '0'+secondes;
-      	}
-      	context.fillText('00 : '+secondes, rectCanvas.width / 2, rectCanvas.height - 50);
-	}
 
 	// Gère les clicks en fonction de l'état du jeux
 	function checkClick(event){
-		if (game.stateGame != STATE_RUNNING){
-			var btnStart = resources.images['btn_start'];
-			var finalHeight = btnStart.height * ratio,
-				finalWidth = btnStart.width * ratio;
-			var x = (rectCanvas.width / 2) - ((btnStart.width * ratio) / 2),
-				y = rectCanvas.height - 200;
+		if (gameModel.stateGame != constState.STATE_RUNNING){
+			var btnStart = ui.resources.images['btn_start'];
+			var finalHeight = btnStart.height * ui.ratio,
+				finalWidth = btnStart.width * ui.ratio;
+			var x = (ui.canvas.width / 2) - ((btnStart.width * ui.ratio) / 2),
+				y = ui.canvas.height - finalHeight - (isPortrait() ? 100 : 50);
 			var xClick = event.pageX,
 				yClick = event.pageY;
 			if (yClick > y && yClick < (y + finalHeight)
 				&& xClick > x && xClick < (x + finalWidth)){
-				game.stateGame = game.stateGame === STATE_ACCUEIL ? STATE_RUNNING : STATE_ACCUEIL;
-				game.time = new Date().getTime();
+				gameModel.stateGame = gameModel.stateGame === constState.STATE_ACCUEIL ? constState.STATE_RUNNING : constState.STATE_ACCUEIL;
+				gameModel.time = new Date().getTime();
 			}
 		}
 
@@ -279,14 +189,38 @@ var skiffSimulatorApp = skiffSimulatorApp || function(){
 
 
 	function setDistance(distance){
-		distanceArduino = distance;
+		if (gameModel.distanceArduino === distance){
+			gameModel.direction = 0;
+		}else if (gameModel.distanceArduino > distance){
+			gameModel.direction = 1;
+		}else{
+			gameModel.direction = -1;
+		}
+		// Vitesse en cm / ms
+		gameModel.speed = Math.abs(gameModel.distanceArduino - distance) / ConstSAS.DELAY;
+		gameModel.distanceArduino = distance;
 	}
 
+	function isPortrait(){
+		return ui.modeScreen === constScreen.SCREEN_PORTRAIT;
+	}
+
+	function getSuffix(){
+		return isPortrait() ? '_portrait' : '_paysage';
+	}
+	
 	return  {
 		init : init,
-		setDistance : setDistance
+		ui : ui,
+		constState : constState,
+		constScreen : constScreen,
+		gameModel : gameModel,
+		setDistance : setDistance,
+		getSuffix : getSuffix,
+		isPortrait : isPortrait
+
 	}
 }();
 
-skiffSimulatorApp.init();
+AppSAS.init();
 

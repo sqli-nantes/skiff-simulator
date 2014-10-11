@@ -50,35 +50,19 @@ var ScreenSasAction = ScreenSasAction || function(){
 			}
 		}
 
-		if (new Date().getTime() - AppSAS.gameModel.time > 30 * 1000){
+		if (new Date().getTime() - AppSAS.gameModel.time > ConstSAS.TIME_GAME){			
 			AppSAS.gameModel.stateGame = AppSAS.constState.STATE_END;
+			// On doit mettre à jour les données
+			StorageSAS.manageChangeStateUser();
 			return;
 		}
-
-		// Bouchon pour les tests à virer ! 
-		/*var timeBis = new Date().getTime();
-		var delta = timeBis - time;
-		if (delta > 2000){
-			time = timeBis;
-		}else{
-			AppSAS.gameModel.indexSprite = 'R'+(Math.min(Math.round((delta/2000) * 10), 9)+1)+AppSAS.getSuffix();
-		}
-		
-		var timeMoveRive = new Date().getTime();
-		var deltaRive = timeMoveRive - timeRive;
-		if (deltaRive > 4000){
-			timeRive = timeMoveRive;
-			AppSAS.gameModel.percent = 0;
-		}else{
-			AppSAS.gameModel.percent = deltaRive / 4000;
-		}*/
 	}
 
 	// Affiche le bon sprire du bateau
 	function paintBoat(){
-		console.log('Sprite : '+AppSAS.gameModel.indexSprite);
-		var image = AppSAS.ui.resources.images[AppSAS.gameModel.indexSprite];		
+		//console.log('Sprite : '+AppSAS.gameModel.indexSprite);
 		//var ratio = 0.05;
+		var image = AppSAS.ui.resources.images[AppSAS.gameModel.indexSprite];		
 		AppSAS.ui.context.shadowOffsetX = 0;
 		AppSAS.ui.context.shadowOffsetY = 0;
 		AppSAS.ui.context.shadowBlur = 0;

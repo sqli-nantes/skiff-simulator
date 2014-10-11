@@ -17,6 +17,7 @@ var AppSAS = AppSAS || function(){
 	// Variables à utiliser
 
 	var ui = {
+		input : null,
 		canvas : null,
 		context : null,
 		resources : new Resources(),
@@ -32,7 +33,8 @@ var AppSAS = AppSAS || function(){
 		distanceSkiff : 0,
 		distanceArduino : 0, 
 		direction : 0,
-		speed : 0
+		speed : 0,
+		highScores : []
 	};
 
 	
@@ -45,6 +47,7 @@ var AppSAS = AppSAS || function(){
 		}
 
 		// On initialise le canvas
+		ui.input = document.getElementById('user');
 		ui.canvas = document.getElementById('skiff');
 		ui.canvas.width  = window.innerWidth;
 		ui.canvas.height = window.innerHeight;
@@ -95,29 +98,29 @@ var AppSAS = AppSAS || function(){
 
 	// Gère l'affichage de l'écran
 	function paintSkiff() {
+		try{
+			// Initialisation des variables pour gérer les redimentionements
+			ui.modeScreen = window.innerWidth > window.innerHeight ? constScreen.SCREEN_LANDSCAPE : constScreen.SCREEN_PORTRAIT;
+			ui.ratio = ui.canvas.height / ui.resources.images['rive_gauche'+getSuffix()].height;
+			ui.canvas.width  = window.innerWidth;
+			ui.canvas.height = window.innerHeight;
 
-		// Initialisation des variables pour gérer les redimentionements
-		ui.modeScreen = window.innerWidth > window.innerHeight ? constScreen.SCREEN_LANDSCAPE : constScreen.SCREEN_PORTRAIT;
-		ui.ratio = ui.canvas.height / ui.resources.images['rive_gauche'+getSuffix()].height;
-		ui.canvas.width  = window.innerWidth;
-		ui.canvas.height = window.innerHeight;
+			// Affichage des décors
+			paintBackground();		
 
-		// Affichage des décors
-		paintBackground();		
+			if (gameModel.stateGame === constState.STATE_ACCUEIL){				
+				ScreenSasAccueil.paintSkiffAccueil();
+			}else if (gameModel.stateGame === constState.STATE_RUNNING){
+				ScreenSasAction.paintSkiffAction();
+			}if (gameModel.stateGame === constState.STATE_END){
+				ScreenSasEnd.paintSkiffEnd();
+			}
 
-		if (gameModel.stateGame === constState.STATE_ACCUEIL){
-			ScreenSasAccueil.paintSkiffAccueil();
-		}else if (gameModel.stateGame === constState.STATE_RUNNING){
-			ScreenSasAction.paintSkiffAction();
-		}if (gameModel.stateGame === constState.STATE_END){
-			ScreenSasEnd.paintSkiffEnd();
+			window.requestAnimationFrame(paintSkiff);
+		}catch(err){
+			console.error("Error  : %s \n %s",err.message, err.stack);
 		}
-
-		window.requestAnimationFrame(paintSkiff);
 	}
-
-
-	
 
 
 	// Affiche le fond d'écran et le rivage
@@ -173,10 +176,28 @@ var AppSAS = AppSAS || function(){
 				yClick = event.pageY;
 			if (yClick > y && yClick < (y + finalHeight)
 				&& xClick > x && xClick < (x + finalWidth)){
+				// On change l'état du jeux
 				gameModel.stateGame = gameModel.stateGame === constState.STATE_ACCUEIL ? constState.STATE_RUNNING : constState.STATE_ACCUEIL;
-				gameModel.time = new Date().getTime();
+				if (gameModel.stateGame === constState.STATE_RUNNING){
+					// On initialise le timer
+					gameModel.time = new Date().getTime();			
+					// On cache le champ d'input
+					ui.input.style.display = 'none';
+					// On initialise bien le champ login avec au moins anonymous
+					ui.input.value = ui.input.value && ui.input.value.trim().length > 0 ? ui.input.value : 'ANONYMOUS';	
+				}else{
+					// On vide bien le champ du user
+					// On réiinitialise
+					gameModel.distanceSkiff = 0;
+					ui.input.value = '';
+					ui.input.style.display = '';
+				}
+				StorageSAS.manageChangeStateUser();
 			}
 		}
+	}
+
+	function engineSkiff(){
 
 	}
    
@@ -188,6 +209,7 @@ var AppSAS = AppSAS || function(){
 	}
 
 
+	// Calcul 
 	function setDistance(distance){
 		if (gameModel.distanceArduino === distance){
 			gameModel.direction = 0;

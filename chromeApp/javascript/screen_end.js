@@ -65,7 +65,7 @@ var ScreenSasEnd = ScreenSasEnd || function(){
 		AppSAS.ui.context.shadowOffsetX = 0;
 		AppSAS.ui.context.shadowOffsetY = 10;
 		AppSAS.ui.context.shadowBlur = 4;
-      	AppSAS.ui.context.fillText('750 M', xDistance, topDistance);      	
+      	AppSAS.ui.context.fillText(AppSAS.gameModel.distanceSkiff+' M', xDistance, topDistance);      	
 
       	var topHighScore = AppSAS.isPortrait() ?  topDistance + 225 : 150;
       	var xHighScore = AppSAS.isPortrait() ? AppSAS.ui.canvas.width / 2 : (AppSAS.ui.canvas.width * 3) / 4
@@ -77,9 +77,11 @@ var ScreenSasEnd = ScreenSasEnd || function(){
 		AppSAS.ui.context.shadowBlur = 0;
       	AppSAS.ui.context.fillText('HIGH SCORES', xHighScore, topHighScore);
 
-      	var limit = AppSAS.isPortrait() ? 5 : 10;
+      	var highScores = AppSAS.gameModel.highScores;
+      	var limit = Math.min(AppSAS.isPortrait() ? ConstSAS.NB_HIGHSCORES_PORTRAIT : ConstSAS.NB_HIGHSCORES_PASYAGE, highScores.length);
       	for (var i =1 ; i <= limit;i++){
-      		var topHighScoreRow = topHighScore + (i-1) * 70 + (AppSAS.isPortrait() ? 150 : 100);
+      		var user = highScores[i-1];
+      		var topHighScoreRow = topHighScore + (i-1) * 70 + (AppSAS.isPortrait() ? 150 : 90);
       		var xHighScoreRow = AppSAS.isPortrait() ? 150 : (AppSAS.ui.canvas.width / 2)+50;
       		var xHighScoreRowUser = xHighScoreRow + 100;
 			AppSAS.ui.context.font = '30pt Minecraftia';
@@ -95,9 +97,9 @@ var ScreenSasEnd = ScreenSasEnd || function(){
 			AppSAS.ui.context.shadowOffsetX = 0;
 			AppSAS.ui.context.shadowOffsetY = 0;
 			AppSAS.ui.context.shadowBlur = 0;
-			AppSAS.ui.context.fillText('user '+i, xHighScoreRowUser, topHighScoreRow);
+			AppSAS.ui.context.fillText(user.login, xHighScoreRowUser, topHighScoreRow);
 			AppSAS.ui.context.textAlign = 'right';
-			AppSAS.ui.context.fillText('1 100 M ', AppSAS.ui.canvas.width - 150, topHighScoreRow);
+			AppSAS.ui.context.fillText(user.distance+' M', AppSAS.ui.canvas.width - 150, topHighScoreRow);
       	}
 	}
 

@@ -198,7 +198,11 @@ var AppSAS = AppSAS || function(){
 	}
 
 	function engineSkiff(){
-
+		if (gameModel.speed > 0 && gameModel.stateGame === constState.STATE_RUNNING){
+			var distanceSpeed = gameModel.speed * ConstSAS.DELAY;
+			gameModel.distanceSkiff += (distanceSpeed * ConstSAS.FACTOR_DISTANCE);
+			gameModel.percent  = (gameModel.distanceSkiff % 100) / 100;
+		}
 	}
    
 	//API
@@ -219,8 +223,15 @@ var AppSAS = AppSAS || function(){
 			gameModel.direction = -1;
 		}
 		// Vitesse en cm / ms
-		gameModel.speed = Math.abs(gameModel.distanceArduino - distance) / ConstSAS.DELAY;
+		var deltaCM = Math.abs(gameModel.distanceArduino - distance);		
+		if (deltaCM > ConstSAS.MIN_DELTA_CM){
+			gameModel.speed = deltaCM / ConstSAS.DELAY;
+		}else{
+			gameModel.speed = Math.max(gameModel.speed - ConstSAS.FACTOR_SPEED, 0);
+		}
 		gameModel.distanceArduino = distance;
+
+		engineSkiff();
 	}
 
 	function isPortrait(){

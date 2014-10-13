@@ -97,7 +97,7 @@ var ScreenSasAction = ScreenSasAction || function(){
 		AppSAS.ui.context.shadowOffsetX = 0;
 		AppSAS.ui.context.shadowOffsetY = 10;
 		AppSAS.ui.context.shadowBlur = 4;
-      	AppSAS.ui.context.fillText('750 M', xDistance, yDistance);
+      	AppSAS.ui.context.fillText(Math.floor(AppSAS.gameModel.distanceSkiff)+' M', xDistance, yDistance);
 
       	//Maintenant on écrit l'heure
       	var time = new Date().getTime();

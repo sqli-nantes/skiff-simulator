@@ -65,7 +65,7 @@ var ScreenSasEnd = ScreenSasEnd || function(){
 		AppSAS.ui.context.shadowOffsetX = 0;
 		AppSAS.ui.context.shadowOffsetY = 10;
 		AppSAS.ui.context.shadowBlur = 4;
-      	AppSAS.ui.context.fillText(AppSAS.gameModel.distanceSkiff+' M', xDistance, topDistance);      	
+      	AppSAS.ui.context.fillText(Math.floor(AppSAS.gameModel.distanceSkiff)+' M', xDistance, topDistance);      	
 
       	var topHighScore = AppSAS.isPortrait() ?  topDistance + 225 : 150;
       	var xHighScore = AppSAS.isPortrait() ? AppSAS.ui.canvas.width / 2 : (AppSAS.ui.canvas.width * 3) / 4
@@ -99,7 +99,7 @@ var ScreenSasEnd = ScreenSasEnd || function(){
 			AppSAS.ui.context.shadowBlur = 0;
 			AppSAS.ui.context.fillText(user.login, xHighScoreRowUser, topHighScoreRow);
 			AppSAS.ui.context.textAlign = 'right';
-			AppSAS.ui.context.fillText(user.distance+' M', AppSAS.ui.canvas.width - 150, topHighScoreRow);
+			AppSAS.ui.context.fillText(Math.floor(user.distance)+' M', AppSAS.ui.canvas.width - 150, topHighScoreRow);
       	}
 	}
 

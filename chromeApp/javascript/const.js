@@ -11,7 +11,9 @@ var ConstSAS = ConstSAS || function(){
 		// Delta en centimetre entre 2 mesures en dessous duquel on considère qu'on ne bouge plus
 		MIN_DELTA_CM : 2,
 		// Constantes de jeux
-		DISTANCE_MAX : 40,
+		DISTANCE_MAX : 54,
+		DISTANCE_MIN : 10,
+		DISTANCE_PARCOURUE : 44,
 		TIME_GAME : 30 * 1000,
 		// Constantes Graphiques
 		NB_HIGHSCORES_PASYAGE : 10,

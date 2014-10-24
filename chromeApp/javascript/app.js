@@ -179,6 +179,9 @@ var AppSAS = AppSAS || function(){
 				// On change l'état du jeux
 				gameModel.stateGame = gameModel.stateGame === constState.STATE_ACCUEIL ? constState.STATE_RUNNING : constState.STATE_ACCUEIL;
 				if (gameModel.stateGame === constState.STATE_RUNNING){
+					// On démare la musique
+					SasAudio.stop();
+					SasAudio.playGame();
 					// On initialise le timer
 					gameModel.time = new Date().getTime();			
 					// On cache le champ d'input
@@ -186,6 +189,9 @@ var AppSAS = AppSAS || function(){
 					// On initialise bien le champ login avec au moins anonymous
 					ui.input.value = ui.input.value && ui.input.value.trim().length > 0 ? ui.input.value : 'ANONYMOUS';	
 				}else{
+					// On démare la musique
+					SasAudio.stop();
+					SasAudio.playTitle();
 					// On vide bien le champ du user
 					// On réiinitialise
 					gameModel.distanceSkiff = 0;

@@ -40,7 +40,7 @@ module.exports = function (grunt) {
         dev: {
             options:{
                 sassDir: 'scss',
-                sourcemap: true,
+                //sourcemap: true,
                 cssDir : 'css'
             }
         }

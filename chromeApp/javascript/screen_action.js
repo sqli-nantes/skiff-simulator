@@ -6,13 +6,13 @@ var ScreenSasAction = ScreenSasAction || function(){
 	var mappingPositonRameurBack = [];
 	for (var i = 0; i <5 ;i++){
 		mappingPositonRameurBack.push({
-			min : ConstSAS.DISTANCE_MAX * (i / 5),
-			max : ConstSAS.DISTANCE_MAX * ((i+1) / 5),
+			min : ConstSAS.DISTANCE_MIN + (ConstSAS.DISTANCE_PARCOURUE * (i / 5)),
+			max : ConstSAS.DISTANCE_MIN + (ConstSAS.DISTANCE_PARCOURUE * ((i+1) / 5)),
 			indexSprite : 'R'+(i+1)
 		});
 		mappingPositonRameurFront.push({
-			min : ConstSAS.DISTANCE_MAX * (i / 5),
-			max : ConstSAS.DISTANCE_MAX * ((i+1) / 5),
+			min : ConstSAS.DISTANCE_MIN + (ConstSAS.DISTANCE_PARCOURUE * (i / 5)),
+			max : ConstSAS.DISTANCE_MIN + (ConstSAS.DISTANCE_PARCOURUE * ((i+1) / 5)),
 			indexSprite : 'A'+(5-i)
 		});
 	}
@@ -51,6 +51,11 @@ var ScreenSasAction = ScreenSasAction || function(){
 		}
 
 		if (new Date().getTime() - AppSAS.gameModel.time > ConstSAS.TIME_GAME){			
+			if (AppSAS.gameModel.stateGame != AppSAS.constState.STATE_END){
+				//On gère le changement de musique
+				SasAudio.stop();
+				SasAudio.playHighScore();
+			}
 			AppSAS.gameModel.stateGame = AppSAS.constState.STATE_END;
 			// On doit mettre à jour les données
 			StorageSAS.manageChangeStateUser();

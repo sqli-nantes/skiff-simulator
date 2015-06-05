@@ -28,13 +28,17 @@ var AppSAS = AppSAS || function(){
 	var gameModel = {
 		stateGame : constState.STATE_ACCUEIL,
 		indexSprite : 'R0',
+		indexSpriteGhost : 'R0',
 		time : 0,
 		percent : 0,
 		distanceSkiff : 0,
 		distanceArduino : 0, 
 		direction : 0,
 		speed : 0,
-		highScores : []
+		highScores : [],
+		currentHistory : [],
+		ghost : [],
+		step : 0
 	};
 
 	
@@ -110,8 +114,18 @@ var AppSAS = AppSAS || function(){
 
 			if (gameModel.stateGame === constState.STATE_ACCUEIL){				
 				ScreenSasAccueil.paintSkiffAccueil();
+				StorageSAS.manageGhost();
 			}else if (gameModel.stateGame === constState.STATE_RUNNING){
+				// On doit peindre le fantome du jeu en premier
 				ScreenSasAction.paintSkiffAction();
+				ScreenSasAction.paintSkiffGhost();
+				// On ajoute l'état à l'historique
+				gameModel.currentHistory.push({
+					direction : gameModel.direction,
+					distanceSkiff : +gameModel.distanceSkiff,
+					distanceArduino : +gameModel.distanceArduino
+				});
+				gameModel.step++;
 			}if (gameModel.stateGame === constState.STATE_END){
 				ScreenSasEnd.paintSkiffEnd();
 			}
@@ -179,6 +193,9 @@ var AppSAS = AppSAS || function(){
 				// On change l'état du jeux
 				gameModel.stateGame = gameModel.stateGame === constState.STATE_ACCUEIL ? constState.STATE_RUNNING : constState.STATE_ACCUEIL;
 				if (gameModel.stateGame === constState.STATE_RUNNING){
+					// On réinitialise l'historique
+					gameModel.currentHistory = [];
+					gameModel.step = 0;
 					// On démare la musique
 					SasAudio.stop();
 					SasAudio.playGame();
@@ -206,8 +223,11 @@ var AppSAS = AppSAS || function(){
 	function engineSkiff(){
 		if (gameModel.speed > 0 && gameModel.stateGame === constState.STATE_RUNNING){
 			var distanceSpeed = gameModel.speed * ConstSAS.DELAY;
+			// On incrémente la distance
 			gameModel.distanceSkiff += (distanceSpeed * ConstSAS.FACTOR_DISTANCE);
+			// On gère l'effet de déplacement des bords via un pourcentage
 			gameModel.percent  = (gameModel.distanceSkiff % 100) / 100;
+			
 		}
 	}
    

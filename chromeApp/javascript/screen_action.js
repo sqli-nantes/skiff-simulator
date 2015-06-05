@@ -17,6 +17,17 @@ var ScreenSasAction = ScreenSasAction || function(){
 		});
 	}
 
+	function paintSkiffGhost(){		
+		if (AppSAS.gameModel.ghost.length === 0 
+			|| AppSAS.gameModel.ghost.length <= AppSAS.gameModel.step){
+			return;
+		}
+		// Gestion de l'état Arduino du ghost
+		checkGhost();
+		// Affichage du bateau ghost
+		paintGhost();		
+	}
+
 	function paintSkiffAction(){
 		// Gestion de l'état Arduino
 		checkSprite();
@@ -31,6 +42,31 @@ var ScreenSasAction = ScreenSasAction || function(){
 	var timeRive = new Date().getTime();
 
 
+	function indexToUse(direction, distance){
+		var arrayToUse = direction >= 0 ? mappingPositonRameurFront : mappingPositonRameurBack;
+		for (var i = 0;i <arrayToUse.length; i++){
+			var minMax = arrayToUse[i];
+			if (distance > minMax.min && distance <= minMax.max){
+				return minMax.indexSprite+AppSAS.getSuffix();
+			}
+		}
+		return mappingPositonRameurBack[0].indexSprite+AppSAS.getSuffix();
+	}
+
+	// Gère l'état du GHOST à afficher
+	function checkGhost(){
+
+		var stateGhost = AppSAS.gameModel.ghost[AppSAS.gameModel.step];
+		var copyDistance = stateGhost.distanceArduino;
+		var copyDirection = stateGhost.direction;		
+		if (copyDirection != 0 
+			&& copyDistance > 0
+			&& copyDistance <= ConstSAS.DISTANCE_MAX){
+			AppSAS.gameModel.indexSpriteGhost = indexToUse(copyDirection, copyDistance);	
+			
+		}		
+	}
+
 	// Gère l'état du sprite à afficher
 	function checkSprite(){
 
@@ -40,14 +76,7 @@ var ScreenSasAction = ScreenSasAction || function(){
 		if (AppSAS.gameModel.direction != 0 
 			&& copyDistance > 0
 			&& copyDistance <= ConstSAS.DISTANCE_MAX){
-			var arrayToUse = copyDirection >= 0 ? mappingPositonRameurFront : mappingPositonRameurBack;
-			for (var i = 0;i <arrayToUse.length; i++){
-				var minMax = arrayToUse[i];
-				if (copyDistance > minMax.min && copyDistance <= minMax.max){
-					AppSAS.gameModel.indexSprite = minMax.indexSprite+AppSAS.getSuffix();
-					break;
-				}
-			}
+			AppSAS.gameModel.indexSprite = indexToUse(copyDirection, copyDistance);						
 		}
 
 		if (new Date().getTime() - AppSAS.gameModel.time > ConstSAS.TIME_GAME){			
@@ -63,9 +92,40 @@ var ScreenSasAction = ScreenSasAction || function(){
 		}
 	}
 
+	// Affiche le bon sprire du bateau du mode Ghost
+	function paintGhost(){
+		//var ratio = 0.05;
+		var image = AppSAS.ui.resources.images[AppSAS.gameModel.indexSpriteGhost];		
+
+		if (!image){
+			return;
+		}
+
+		AppSAS.ui.context.shadowOffsetX = 0;
+		AppSAS.ui.context.shadowOffsetY = 0;
+		AppSAS.ui.context.shadowBlur = 0;
+		// On change l'opacité du fantome
+		AppSAS.ui.context.globalAlpha = 0.2;
+		// Le fantome doit etre dessiné là où il est au niveau de sa distance globale par rapport au bateau actuel 
+		// => On l'affiche là où est son delta en distance par rapport à bateau actuel
+		var stateGhost = AppSAS.gameModel.ghost[AppSAS.gameModel.step];
+		var deltaGhost = AppSAS.gameModel.distanceSkiff - stateGhost.distanceSkiff;
+		AppSAS.ui.context.drawImage(image
+			, 0 //sx clipping de l'image originale
+			, 0 //sy clipping de l'image originale
+			, image.width // swidth clipping de l'image originale
+			, image.height // sheight clipping de l'image originale
+			, (AppSAS.ui.canvas.width / 2) - ((image.width * AppSAS.ui.ratio) / 2) // x Coordonnées dans le dessin du AppSAS.ui.canvas
+			, (AppSAS.ui.canvas.height / 2) - ((image.height * AppSAS.ui.ratio) / 2)  + 100 + deltaGhost// y Coordonnées dans le dessin du AppSAS.ui.canvas
+			, image.width * AppSAS.ui.ratio // width taille du dessin
+			, image.height * AppSAS.ui.ratio // height taille du dessin			
+			);
+		// On remet l'opacité du canvas à 1 pour dessiner l'animation
+		AppSAS.ui.context.globalAlpha = 1;
+	}
+
 	// Affiche le bon sprire du bateau
 	function paintBoat(){
-		//console.log('Sprite : '+AppSAS.gameModel.indexSprite);
 		//var ratio = 0.05;
 		var image = AppSAS.ui.resources.images[AppSAS.gameModel.indexSprite];		
 		AppSAS.ui.context.shadowOffsetX = 0;
@@ -76,8 +136,8 @@ var ScreenSasAction = ScreenSasAction || function(){
 			, 0 //sy clipping de l'image originale
 			, image.width // swidth clipping de l'image originale
 			, image.height // sheight clipping de l'image originale
-			, (AppSAS.ui.canvas.width / 2) - ((image.width * AppSAS.ui.ratio) / 2) // x Coordonnées dans le dessing du AppSAS.ui.canvas
-			, (AppSAS.ui.canvas.height / 2) - ((image.height * AppSAS.ui.ratio) / 2)  + 100// y Coordonnées dans le dessing du AppSAS.ui.canvas
+			, (AppSAS.ui.canvas.width / 2) - ((image.width * AppSAS.ui.ratio) / 2) // x Coordonnées dans le dessin du AppSAS.ui.canvas
+			, (AppSAS.ui.canvas.height / 2) - ((image.height * AppSAS.ui.ratio) / 2)  + 100// y Coordonnées dans le dessin du AppSAS.ui.canvas
 			, image.width * AppSAS.ui.ratio // width taille du dessin
 			, image.height * AppSAS.ui.ratio // height taille du dessin			
 			)
@@ -121,6 +181,7 @@ var ScreenSasAction = ScreenSasAction || function(){
 	}
 
 	return {
+		paintSkiffGhost : paintSkiffGhost,
 		paintSkiffAction : paintSkiffAction,
 		paintBoat : paintBoat
 	}

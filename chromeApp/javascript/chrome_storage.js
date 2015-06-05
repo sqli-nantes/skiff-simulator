@@ -38,6 +38,36 @@ var StorageSAS = StorageSAS || function(){
 		}
 	}
 
+	// Gère la persistance mise à jour du Ghost dans le modèle
+	function manageGhost(){
+		if (AppSAS.gameModel.stateGame === AppSAS.constState.STATE_END){
+			// En cas de fin de jeux, on doit mettre à jour potentiellement le ghost 
+			if (AppSAS.gameModel.highScores[0].distance === AppSAS.gameModel.distanceSkiff){
+				// Si la distance courrante est le nouveau highScore, alors, on update le localStore
+				AppSAS.gameModel.ghost = AppSAS.gameModel.currentHistory;
+				set('ghost', AppSAS.gameModel.ghost);
+			}
+
+		}else if (AppSAS.gameModel.stateGame === AppSAS.constState.STATE_ACCUEIL){
+			// Si on est sur l'accueil, on vérifie que le ghost est bien remplit
+			if (AppSAS.gameModel.ghost.length > 0){
+				return;
+			}
+
+			try{				
+				get('ghost', function callBackGhost(resp){
+					if (resp['ghost']){
+						AppSAS.gameModel.ghost = resp['ghost'];
+					}
+				});	
+			}catch(error){
+				// On ne fait rien car pour le moment aucune partie n'a été jouée	
+				set('ghost', []);			
+			}
+
+		}
+	}
+
 	// Gère le login du user et le tri sur les users
 	function manageChangeStateUser(){
 		if (AppSAS.gameModel.stateGame === AppSAS.constState.STATE_RUNNING){
@@ -93,7 +123,11 @@ var StorageSAS = StorageSAS || function(){
 				}
 
 				AppSAS.gameModel.highScores = highScores;				
+
+				// On doit gérer la mise à jour du ghost
+				manageGhost();
 			});			
+
 
 		}
 	}
@@ -105,7 +139,8 @@ var StorageSAS = StorageSAS || function(){
 	});
 
 	return{
-		manageChangeStateUser : manageChangeStateUser
+		manageChangeStateUser : manageChangeStateUser,
+		manageGhost : manageGhost
 	}
 
 }();

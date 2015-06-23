@@ -8,6 +8,8 @@ var ConstSAS = ConstSAS || function(){
 		FACTOR_DISTANCE : 0.4, 
 		// Facteur de soustraction de la vitesse pour gérer les arrêts de rameur avec glisse du rameur
 		FACTOR_SPEED : 0.005,
+		// Facteur d'avancement du Ghost par rapport au player en cours
+		FACTOR_GHOST : 3,
 		// Delta en centimetre entre 2 mesures en dessous duquel on considère qu'on ne bouge plus
 		MIN_DELTA_CM : 2,
 		// Constantes de jeux

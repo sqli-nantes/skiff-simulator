@@ -116,7 +116,7 @@ var AppSAS = AppSAS || function(){
 				ScreenSasAccueil.paintSkiffAccueil();
 				StorageSAS.manageGhost();
 			}else if (gameModel.stateGame === constState.STATE_RUNNING){
-				// On doit peindre le fantome du jeu en premier
+				// On doit peindre le fantome du jeu en deuxième car son alpha nous indique où il est
 				ScreenSasAction.paintSkiffAction();
 				ScreenSasAction.paintSkiffGhost();
 				// On ajoute l'état à l'historique

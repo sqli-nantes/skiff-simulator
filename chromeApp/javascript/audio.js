@@ -73,15 +73,15 @@ var SasAudio = SasAudio || function(){
 	*/
 	
 	function playTitle(){
-		currentSource = playSound(titleBuffer);
+		//currentSource = playSound(titleBuffer);
 	}
 
 	function playGame(){
-		currentSource = playSound(gameBuffer);
+		//currentSource = playSound(gameBuffer);
 	}
 
 	function playHighScore(){
-		currentSource = playSound(highscoreBuffer);
+		//currentSource = playSound(highscoreBuffer);
 	}
 
 	function stop(){

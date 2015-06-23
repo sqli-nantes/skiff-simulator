@@ -110,15 +110,23 @@ var ScreenSasAction = ScreenSasAction || function(){
 		// => On l'affiche là où est son delta en distance par rapport à bateau actuel
 		var stateGhost = AppSAS.gameModel.ghost[AppSAS.gameModel.step];
 		var deltaGhost = AppSAS.gameModel.distanceSkiff - stateGhost.distanceSkiff;
+		// On doit tronquer le ghost s'il dépasse de l'écran
+		var deltaHeightGhost = 0;
+		var yGhost = (AppSAS.ui.canvas.height / 2) - ((image.height * AppSAS.ui.ratio) / 2)  + 100 + deltaGhost;
+		var heightSpriteGhost = image.height;
+		if (yGhost < 0){
+			heightSpriteGhost = image.height + yGhost;
+			yGhost = 0;
+		}
 		AppSAS.ui.context.drawImage(image
 			, 0 //sx clipping de l'image originale
 			, 0 //sy clipping de l'image originale
 			, image.width // swidth clipping de l'image originale
-			, image.height // sheight clipping de l'image originale
+			, heightSpriteGhost // sheight clipping de l'image originale
 			, (AppSAS.ui.canvas.width / 2) - ((image.width * AppSAS.ui.ratio) / 2) // x Coordonnées dans le dessin du AppSAS.ui.canvas
-			, (AppSAS.ui.canvas.height / 2) - ((image.height * AppSAS.ui.ratio) / 2)  + 100 + deltaGhost// y Coordonnées dans le dessin du AppSAS.ui.canvas
+			, yGhost // y Coordonnées dans le dessin du AppSAS.ui.canvas
 			, image.width * AppSAS.ui.ratio // width taille du dessin
-			, image.height * AppSAS.ui.ratio // height taille du dessin			
+			, heightSpriteGhost * AppSAS.ui.ratio // height taille du dessin			
 			);
 		// On remet l'opacité du canvas à 1 pour dessiner l'animation
 		AppSAS.ui.context.globalAlpha = 1;
